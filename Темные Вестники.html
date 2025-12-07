@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вестники - Выбор Пути</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 25%, #050505 50%, #0f0f0f 75%, #000000 100%);
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Анимированный фон с эффектом частиц */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 20, 20, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(0, 255, 200, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Шумовая текстура */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' seed='2' /%3E%3C/filter%3E%3Crect width='400' height='400' fill='%23000000' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+            animation: drift 20s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1200px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(15, 15, 15, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 60px 50px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 60px rgba(255, 20, 20, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Декоративный элемент внутри карточки */
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 20, 20, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .main-content::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 255, 200, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .content-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header__subtitle {
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: #ff1414;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 20, 20, 0.4);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; text-shadow: 0 0 20px rgba(255, 20, 20, 0.4); }
+            50% { opacity: 1; text-shadow: 0 0 30px rgba(255, 20, 20, 0.6); }
+        }
+
+        .header__title {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            text-shadow: 0 0 40px rgba(255, 20, 20, 0.2);
+        }
+
+        .header__description {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-container {
+            margin-bottom: 50px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-number {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff1414 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 20, 20, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff1414 0%, #ff6b6b 100%);
+            border-radius: 3px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(255, 20, 20, 0.6);
+        }
+
+        .question-container {
+            margin-bottom: 50px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            letter-spacing: 0.3px;
+        }
+
+        .question-note {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .answers-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .answer-option {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .answer-radio {
+            display: none;
+        }
+
+        .answer-label {
+            display: flex;
+            align-items: center;
+            padding: 24px 28px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid rgba(255, 20, 20, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 20, 20, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .answer-option:hover .answer-label {
+            background: rgba(40, 40, 40, 0.9);
+            border-color: rgba(255, 20, 20, 0.5);
+            transform: translateX(8px);
+            box-shadow: 0 8px 24px rgba(255, 20, 20, 0.15);
+        }
+
+        .answer-option:hover .answer-label::before {
+            left: 100%;
+        }
+
+        .answer-radio:checked + .answer-label {
+            background: linear-gradient(135deg, rgba(255, 20, 20, 0.2) 0%, rgba(255, 20, 20, 0.1) 100%);
+            border-color: #ff1414;
+            box-shadow: 0 0 20px rgba(255, 20, 20, 0.4), inset 0 0 20px rgba(255, 20, 20, 0.1);
+        }
+
+        .radio-circle {
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255, 20, 20, 0.4);
+            border-radius: 50%;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+        }
+
+        .answer-radio:checked + .answer-label .radio-circle {
+            border-color: #ff1414;
+            box-shadow: 0 0 15px rgba(255, 20, 20, 0.6), inset 0 0 8px rgba(255, 20, 20, 0.3);
+            background: rgba(255, 20, 20, 0.1);
+        }
+
+        .radio-circle::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #ff1414;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .answer-radio:checked + .answer-label .radio-circle::after {
+            opacity: 1;
+        }
+
+        .answer-text {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+            color: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .answer-radio:checked + .answer-label .answer-text {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 50px;
+            justify-content: space-between;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 32px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 30, 0.8);
+            color: #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(40, 40, 40, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff1414 0%, #ff6b6b 100%);
+            border-color: #ff1414;
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 20, 20, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #ff3333 0%, #ff8888 100%);
+            box-shadow: 0 0 50px rgba(255, 20, 20, 0.6);
+            border-color: #ff3333;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .icon {
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .question-text {
+            animation: slideInLeft 0.6s ease-out 0.2s backwards;
+        }
+
+        .answer-option:nth-child(1) {
+            animation: slideInLeft 0.6s ease-out 0.4s backwards;
+        }
+
+        .answer-option:nth-child(2) {
+            animation: slideInLeft 0.6s ease-out 0.5s backwards;
+        }
+
+        .answer-option:nth-child(3) {
+            animation: slideInLeft 0.6s ease-out 0.6s backwards;
+        }
+
+        .buttons-container {
+            animation: slideInRight 0.6s ease-out 0.7s backwards;
+        }
+
+        /* Плавный скролл */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Дополнительные эффекты */
+        .glow-effect {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .glow-red {
+            background: #ff1414;
+            top: 10%;
+            right: 10%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .glow-cyan {
+            background: #00ffc8;
+            bottom: 10%;
+            left: 10%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 40px 30px;
+            }
+
+            .header__title {
+                font-size: 36px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .answer-label {
+                padding: 18px 20px;
+            }
+
+            .radio-circle {
+                width: 18px;
+                height: 18px;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 14px 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header__title {
+                font-size: 28px;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+                border-radius: 15px;
+            }
+
+            .answer-label {
+                padding: 16px 16px;
+            }
+
+            .answer-text {
+                font-size: 13px;
+            }
+        }
+
+        /* Дополнительная стилизация для более глубокого черного */
+        body {
+            background-color: #000000;
+        }
+
+        .main-content {
+            background: rgba(10, 10, 10, 0.85);
+        }
+
+        /* Изящный переход при смене вопроса */
+        .fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-effect glow-red"></div>
+    <div class="glow-effect glow-cyan"></div>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="content-inner">
+                <div class="header">
+                    <div class="header__subtitle">⚡ Темные Вестники</div>
+                    <h1 class="header__title">Выбор Пути</h1>
+                    <p class="header__description">Определите свою роль в Ордене через глубокий анализ души</p>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span class="progress-number"><span id="current-question">1</span></span>
+                        <span class="progress-text">из 10 вопросов</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 11%;"></div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text" id="question-text"></div>
+                    <div class="question-note">Пожалуйста, выберите один из вариантов ответа</div>
+
+                    <div class="answers-container" id="answers-container">
+                        <!-- Варианты ответов будут вставлены здесь -->
+                    </div>
+                </div>
+
+                <div class="buttons-container">
+                    <button class="btn" id="btn-prev" onclick="previousQuestion()">← Назад</button>
+                    <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" disabled>Далее →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "Что движет вами в первую очередь?",
+                answers: [
+                    { text: "Власть и контроль над судьбой", role: "archstrategist" },
+                    { text: "Свобода и привлечение единомышленников", role: "warrior" },
+                    { text: "Долг и защита священных принципов", role: "guardian" }
+                ]
+            },
+            {
+                text: "Как вы реагируете на сложные испытания?",
+                answers: [
+                    { text: "Разрабатываю стратегию и беру ситуацию под контроль", role: "archstrategist" },
+                    { text: "Вдохновляю других и зову их за собой", role: "warrior" },
+                    { text: "Стою непоколебимо, защищая ценности", role: "guardian" }
+                ]
+            },
+            {
+                text: "Какова ваша жизненная философия?",
+                answers: [
+                    { text: "Знание и расчет — основа величия", role: "archstrategist" },
+                    { text: "Харизма и убеждение движут историей", role: "warrior" },
+                    { text: "Честь и верность выше всего", role: "guardian" }
+                ]
+            },
+            {
+                text: "Какие люди вызывают ваше уважение?",
+                answers: [
+                    { text: "Те, кто видит на несколько шагов вперед", role: "archstrategist" },
+                    { text: "Те, кто ведут за собой толпы", role: "warrior" },
+                    { text: "Те, кто держат клятву любой ценой", role: "guardian" }
+                ]
+            },
+            {
+                text: "Что для вас самое важное в отношениях?",
+                answers: [
+                    { text: "Взаимная выгода и понимание целей", role: "archstrategist" },
+                    { text: "Страсть, влияние и преданность", role: "warrior" },
+                    { text: "Верность и безусловная поддержка", role: "guardian" }
+                ]
+            },
+            {
+                text: "Какой дар природы вы бы выбрали?",
+                answers: [
+                    { text: "Способность видеть истину сквозь пелену", role: "archstrategist" },
+                    { text: "Неодолимая харизма и магнетизм", role: "warrior" },
+                    { text: "Способность исцелять раны других", role: "guardian" }
+                ]
+            },
+            {
+                text: "Как вы видите идеальный день?",
+                answers: [
+                    { text: "Размышления и планирование будущего", role: "archstrategist" },
+                    { text: "Новые встречи и расширение влияния", role: "warrior" },
+                    { text: "Помощь тем, кто нуждается", role: "guardian" }
+                ]
+            },
+            {
+                text: "Как вы реагируете на критику?",
+                answers: [
+                    { text: "Анализирую и использую для совершенствования", role: "archstrategist" },
+                    { text: "Обращаю скептиков в сторонников", role: "warrior" },
+                    { text: "Прислушиваюсь и стремлюсь исправиться", role: "guardian" }
+                ]
+            },
+            {
+                text: "Что вы оставите после себя?",
+                answers: [
+                    { text: "Наследие знаний и величественное имя", role: "archstrategist" },
+                    { text: "Движение, которое продолжит жить без вас", role: "warrior" },
+                    { text: "Слова людей, которым помогли", role: "guardian" }
+                ]
+            },
+            {
+                text: "Каков ваш истинный характер в конфликте?",
+                answers: [
+                    { text: "Противник, которого всегда надо переиграть", role: "archstrategist" },
+                    { text: "Силы природы, которые невозможно остановить", role: "warrior" },
+                    { text: "Оплот спокойствия среди хаоса", role: "guardian" }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+
+        function renderQuestion() {
+            const question = questions[currentQuestion];
+            const container = document.getElementById('answers-container');
+            const questionText = document.getElementById('question-text');
+
+            questionText.textContent = question.text;
+            container.innerHTML = '';
+
+            question.answers.forEach((answer, index) => {
+                const answerHtml = `
+                    <div class="answer-option">
+                        <input 
+                            type="radio" 
+                            id="answer-${index}" 
+                            class="answer-radio" 
+                            name="answer"
+                            value="${answer.role}"
+                            ${answers[currentQuestion] === answer.role ? 'checked' : ''}
+                            onchange="selectAnswer('${answer.role}')">
+                        <label for="answer-${index}" class="answer-label">
+                            <div class="radio-circle"></div>
+                            <span class="answer-text">${answer.text}</span>
+                        </label>
+                    </div>
+                `;
+                container.innerHTML += answerHtml;
+            });
+
+            updateUI();
+        }
+
+        function selectAnswer(role) {
+            answers[currentQuestion] = role;
+            updateUI();
+        }
+
+        function updateUI() {
+            const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = progressPercent + '%';
+            document.getElementById('current-question').textContent = currentQuestion + 1;
+
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            btnPrev.style.opacity = currentQuestion === 0 ? '0.5' : '1';
+            btnPrev.style.cursor = currentQuestion === 0 ? 'not-allowed' : 'pointer';
+            btnPrev.disabled = currentQuestion === 0;
+
+            btnNext.disabled = answers[currentQuestion] === null;
+            btnNext.classList.toggle('btn-disabled', answers[currentQuestion] === null);
+
+            if (currentQuestion === questions.length - 1) {
+                btnNext.textContent = '✓ Завершить';
+            } else {
+                btnNext.textContent = 'Далее →';
+            }
+        }
+
+        function nextQuestion() {
+            if (answers[currentQuestion] !== null) {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    renderQuestion();
+                    document.querySelector('.content-inner').classList.add('fade-in');
+                } else {
+                    completeTest();
+                }
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+                document.querySelector('.content-inner').classList.add('fade-in');
+            }
+        }
+
+        function completeTest() {
+            const roleCounts = { archstrategist: 0, warrior: 0, guardian: 0 };
+            answers.forEach(role => {
+                if (role) roleCounts[role]++;
+            });
+
+            let resultRole = Object.keys(roleCounts).reduce((a, b) => 
+                roleCounts[a] > roleCounts[b] ? a : b
+            );
+
+            const roleNames = {
+                archstrategist: 'АРХИСТРАТИГ ТЬМЫ',
+                warrior: 'ВОИН РАЗРУШЕНИЯ',
+                guardian: 'КЛЯТВЕННЫЙ СТРАЖ'
+            };
+
+            const roleDescriptions = {
+                archstrategist: 'Вы видите мир как шахматную доску, стратег высочайшего класса. Ваш ум острый, расчеты безошибочны, и вы рождены командовать. Вы понимаете глубины человеческой природы и используете этот знания для достижения великих целей.',
+                warrior: 'Вы воплощение силы и отваги, боец, который не признает преград. Ваша страсть жжет ярче пламени, ваше сердце гремит как барабан войны. Вы разрушаете то, что мешает вашему пути, и создаете новый порядок.',
+                guardian: 'Вы олицетворение верности и чести, защитник священных уз. Ваша душа неколебима, ваша клятва – закон природы. Вы стоите на страже ценностей и готовы пожертвовать всем для других.'
+            };
+
+            const container = document.querySelector('.main-content');
+            container.innerHTML = `
+                <div class="content-inner">
+                    <div class="header">
+                        <div class="header__subtitle">⚡ Результат Пути</div>
+                        <h1 class="header__title">${roleNames[resultRole]}</h1>
+                        <p class="header__description" style="font-size: 16px; margin-top: 25px; line-height: 1.8;">
+                            ${roleDescriptions[resultRole]}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showTieResult(rolesWithMaxCount, roleCounts) {
+            const roleNames = {
+                archstrategist: 'АРХИСТРАТИГ ТЬМЫ',
+                warrior: 'ВОИН РАЗРУШЕНИЯ',
+                guardian: 'КЛЯТВЕННЫЙ СТРАЖ'
+            };
+
+            const roleDescriptions = {
+                archstrategist: 'Вы видите мир как шахматную доску, стратег высочайшего класса. Ваш ум острый, расчеты безошибочны, и вы рождены командовать. Вы понимаете глубины человеческой природы и используете этот знания для достижения великих целей.',
+                warrior: 'Вы воплощение силы и отваги, боец, который не признает преград. Ваша страсть жжет ярче пламени, ваше сердце гремит как барабан войны. Вы разрушаете то, что мешает вашему пути, и создаете новый порядок.',
+                guardian: 'Вы олицетворение верности и чести, защитник священных уз. Ваша душа неколебима, ваша клятва – закон природы. Вы стоите на страже ценностей и готовы пожертвовать всем для других.'
+            };
+
+            const roleEmojis = {
+                archstrategist: '🔴',
+                warrior: '⚔️',
+                guardian: '🛡️'
+            };
+
+            let tieDescription = '';
+            let tieTitle = '';
+
+            if (rolesWithMaxCount.length === 3) {
+                tieTitle = 'ТРИУМВИРАТ ДУШ';
+                tieDescription = 'Вы - воплощение совершенного баланса. В вас живут одновременно стратег, вдохновитель и защитник. Вы способны видеть все стороны медали, вести людей и остаться верным своим принципам. Вы - редкая душа, которая может быть во всем и везде. Ордену нужны люди, способные занимать разные роли в зависимости от обстоятельств.';
+            } else if (rolesWithMaxCount.length === 2) {
+                const roles = rolesWithMaxCount.map(r => roleNames[r]);
+                tieTitle = `${roleNames[rolesWithMaxCount[0]]} И ${roleNames[rolesWithMaxCount[1]]}`;
+                tieDescription = `Вы находитесь в уникальной точке баланса между двумя путями. Ваша природа двойственна - вы способны быть одновременно ${roles[0].toLowerCase()} и ${roles[1].toLowerCase()}. Эта дихотомия делает вас непредсказуемым и сильным. Выберите, какой путь близче вашей душе, или станьте тем, кто объединяет эти две силы.`;
+            }
+
+            const container = document.querySelector('.main-content');
+            container.innerHTML = `
+                <div class="content-inner">
+                    <div class="header">
+                        <div class="header__subtitle">⚡ Редкий Результат</div>
+                        <h1 class="header__title">${tieTitle}</h1>
+                        <p class="header__description" style="font-size: 16px; margin-top: 25px; line-height: 1.8;">
+                            ${tieDescription}
+                        </p>
+                    </div>
+                    <div style="margin-top: 50px; padding: 30px; background: rgba(255, 20, 20, 0.08); border: 1px solid rgba(255, 20, 20, 0.2); border-radius: 12px;">
+                        <p style="color: #ff1414; font-size: 14px; font-weight: 600; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+                            Ваши пути:
+                        </p>
+                        ${rolesWithMaxCount.map(role => `
+                            <p style="color: #e0e0e0; font-size: 13px; margin: 8px 0; padding: 10px; background: rgba(255, 255, 255, 0.03); border-left: 2px solid #ff1414; border-radius: 4px;">
+                                ${roleEmojis[role]} <strong>${roleNames[role]}</strong>
+                            </p>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-primary" onclick="location.reload()" style="width: 100%; margin-top: 40px;">
+                        Начать заново
+                    </button>
+                </div>
+            `;
+        }
+
+        // Инициализация
+        renderQuestion();
+    </script>
+</body>
+</html>
